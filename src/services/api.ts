@@ -4,7 +4,7 @@ import axios from "axios";
 export const BASE_URL = " https://python-backend-lila.onrender.com";
 const api = axios.create({
   baseURL: BASE_URL,
-  timeout: 30000,
+  timeout: 60000,
 });
 
 export interface MapApiItem {
@@ -51,6 +51,21 @@ export interface SummaryResponse {
   insights?: string[];
   [key: string]: unknown;
 }
+
+export const wakeUpServer = async (): Promise<void> => {
+  const maxAttempts = 10;
+  const retryDelay  = 3000;
+
+  for (let attempt = 1; attempt <= maxAttempts; attempt++) {
+    try {
+      await api.get("/", { timeout: 5000 });
+      return;
+    } catch {
+      if (attempt === maxAttempts) throw new Error("Server did not wake up in time");
+      await new Promise((r) => setTimeout(r, retryDelay));
+    }
+  }
+};
 
 export const getEvents = async (params: {
   map_id?: string;
