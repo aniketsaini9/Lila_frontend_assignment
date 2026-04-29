@@ -1,7 +1,12 @@
 import axios from "axios";
 
-// export const BASE_URL = " http://127.0.0.1:8000";
-export const BASE_URL = " https://python-backend-lila.onrender.com";
+const configuredBaseUrl = import.meta.env.VITE_API_BASE_URL?.trim();
+
+export const BASE_URL =
+  configuredBaseUrl && configuredBaseUrl.length > 0
+    ? configuredBaseUrl
+    : "https://python-backend-lila.onrender.com/lila-black";
+
 const api = axios.create({
   baseURL: BASE_URL,
   timeout: 60000,
