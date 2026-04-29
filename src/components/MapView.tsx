@@ -1,5 +1,5 @@
-import { useMemo, useState, useRef, useCallback } from "react";
-import { BASE_URL, type BackendEvent } from "@/services/api";
+import { useMemo, useState, useRef, useCallback, useEffect } from "react";
+import { STATIC_BASE_URL, type BackendEvent } from "@/services/api";
 import { ZoomIn, ZoomOut, Maximize2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
@@ -58,6 +58,17 @@ interface MapViewProps {
 const toNum = (v: unknown) => {
   const n = Number(v);
   return Number.isFinite(n) ? n : 0;
+};
+
+const resolveMinimapUrl = (minimapUrl?: string) => {
+  if (!minimapUrl) return "";
+  if (/^https?:\/\//i.test(minimapUrl)) return minimapUrl;
+
+  try {
+    return new URL(minimapUrl, `${STATIC_BASE_URL}/`).toString();
+  } catch {
+    return "";
+  }
 };
 
 const MapView = ({
@@ -173,9 +184,11 @@ const MapView = ({
     
     return clusters.filter(c => c.count >= 3);
   }, [events]);
-  const src = minimapUrl
-    ? minimapUrl.startsWith("http") ? minimapUrl : `${BASE_URL}${minimapUrl}`
-    : "";
+  const src = resolveMinimapUrl(minimapUrl);
+
+  useEffect(() => {
+    setImgError(false);
+  }, [src]);
 
   return (
     <div className="flex h-full min-h-0 w-full flex-col gap-2">

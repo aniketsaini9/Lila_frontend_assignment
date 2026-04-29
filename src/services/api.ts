@@ -2,10 +2,25 @@ import axios from "axios";
 
 const configuredBaseUrl = import.meta.env.VITE_API_BASE_URL?.trim();
 
-export const BASE_URL =
+const DEFAULT_BACKEND_BASE_URL = "https://python-backend-lila.onrender.com/lila-black";
+const API_PATH_SUFFIX = "/api/v1";
+
+const trimTrailingSlash = (value: string) => value.replace(/\/+$/, "");
+
+const rawBaseUrl =
   configuredBaseUrl && configuredBaseUrl.length > 0
     ? configuredBaseUrl
-    : "https://python-backend-lila.onrender.com/lila-black/api/v1";
+    : `${DEFAULT_BACKEND_BASE_URL}${API_PATH_SUFFIX}`;
+
+const normalizedBaseUrl = trimTrailingSlash(rawBaseUrl);
+
+export const BASE_URL = normalizedBaseUrl.endsWith(API_PATH_SUFFIX)
+  ? normalizedBaseUrl
+  : `${normalizedBaseUrl}${API_PATH_SUFFIX}`;
+
+export const STATIC_BASE_URL = BASE_URL.endsWith(API_PATH_SUFFIX)
+  ? BASE_URL.slice(0, -API_PATH_SUFFIX.length)
+  : BASE_URL;
 
 const api = axios.create({
   baseURL: BASE_URL,
