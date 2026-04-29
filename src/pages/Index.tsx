@@ -178,6 +178,17 @@ const Index = () => {
 
   const selectedMapObject = maps.find((m) => m.map_id === selectedMap);
 
+  const handleTogglePlay = useCallback(() => {
+    if (maxTime <= 1) return;
+
+    setIsPlaying((prev) => {
+      if (prev) return false;
+
+      setCurrentTime((time) => (time >= maxTime ? 0 : time));
+      return true;
+    });
+  }, [maxTime]);
+
   const resetFilters = useCallback(() => {
     const first = maps[0];
     setSelectedMap(first?.map_id ?? "");
@@ -262,7 +273,7 @@ const Index = () => {
             onTimeChange={setCurrentTime}
             visibleCount={visibleEvents.length}
             totalCount={events.length}
-            onTogglePlay={() => setIsPlaying((p) => !p)}
+            onTogglePlay={handleTogglePlay}
             onPlaybackSpeedChange={setPlaybackSpeed}
           />
 
